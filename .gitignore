@@ -1,0 +1,50 @@
+# Environment variables and local secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+token.json
+client_secret*.json
+service-account*.json
+.streamlit/secrets.toml
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Python-generated files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+build/
+dist/
+wheels/
+*.egg-info/
+
+# Local application state and generated artifacts
+*.db
+*.sqlite
+*.sqlite3
+input_files/
+outputs/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
