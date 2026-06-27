@@ -58,7 +58,7 @@ def list_todos() -> str:
 
 
 @tool
-def complete_todo(task_id: list[int]) -> str:
+def complete_todo(task : str) -> str:
     """
     Mark a todo as completed.
     """
@@ -67,7 +67,7 @@ def complete_todo(task_id: list[int]) -> str:
 
     try:
 
-        task = todo_repository.complete_task(db, task_id)
+        task = todo_repository.complete_task(db, task)
 
         if task is None:
             return "Task not found."
@@ -79,21 +79,30 @@ def complete_todo(task_id: list[int]) -> str:
 
 
 @tool
-def delete_todo(task_id: int) -> str:
+def delete_todo(task: str) -> str:
     """
-    Delete a todo item.
+    Delete a todo by its task name.
     """
 
     db = SessionLocal()
 
     try:
 
-        deleted = todo_repository.delete_task(db, task_id)
+        todos = todo_repository.get_all_tasks(db)
 
-        if not deleted:
-            return "Task not found."
+        for todo in todos:
 
-        return "Task deleted."
+            if todo.task.lower() == task.lower():
+
+                todo_repository.delete_task(
+                    db,
+                    todo.id
+                )
+
+                return f"Deleted '{todo.task}'."
+
+        return "Task not found."
 
     finally:
+
         db.close()

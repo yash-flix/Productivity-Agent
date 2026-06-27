@@ -10,6 +10,21 @@ from app.database.todo_repository import add_task
 service = MeetingService()
 
 
+INVALID_TASKS = {
+    "",
+    "none",
+    "none.",
+    "none mentioned",
+    "none mentioned.",
+    "n/a",
+    "na",
+    "-",
+    "nothing",
+    "no action items",
+    "no action item",
+}
+
+
 @tool
 def summarize_meeting(
     transcript: str,
@@ -18,13 +33,11 @@ def summarize_meeting(
     """
     Summarize a meeting transcript.
 
-    Optionally extract action items and
-    automatically add them as todos.
+    Optionally extracts action items and
+    automatically adds them as todos.
     """
 
-    summary = service.summarize(
-        transcript
-    )
+    summary = service.summarize(transcript)
 
     added = 0
 
@@ -34,26 +47,38 @@ def summarize_meeting(
 
         try:
 
+            if "Action Items" in summary:
+
+                action_section = summary.split("Action Items", 1)[1]
+
+            else:
+
+                action_section = summary
+
             action_items = re.findall(
-
-                r"- (.+)",
-
-                summary.split(
-                    "Action Items"
-                )[-1]
-
+                r"[-•]\s+(.+)",
+                action_section
             )
 
             for task in action_items:
 
+                task = task.strip()
+
+                normalized = (
+                    task.lower()
+                    .strip(" .:-")
+                )
+
+                if normalized in INVALID_TASKS:
+                    continue
+
+                if len(task) < 3:
+                    continue
+
                 add_task(
-
                     db=db,
-
                     task=task,
-
                     priority="Medium"
-
                 )
 
                 added += 1
